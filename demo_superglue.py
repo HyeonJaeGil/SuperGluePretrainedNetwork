@@ -219,7 +219,10 @@ if __name__ == '__main__':
             path=None, show_keypoints=opt.show_keypoints, small_text=small_text)
         count += 1
         if count % 5 == 0:
+            last_data = {k+'0': pred[k+'1'] for k in keys}
+            last_data['image0'] = frame_tensor
             last_frame = frame
+            last_image_id = (vs.i - 1)
 
         if not opt.no_display:
             cv2.imshow('SuperGlue matches', out)
