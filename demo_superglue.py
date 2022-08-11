@@ -180,6 +180,8 @@ if __name__ == '__main__':
 
     timer = AverageTimer()
 
+    count = 0
+
     while True:
         frame, ret = vs.next_frame()
         if not ret:
@@ -215,6 +217,9 @@ if __name__ == '__main__':
         out = make_matching_plot_fast(
             last_frame, frame, kpts0, kpts1, mkpts0, mkpts1, color, text,
             path=None, show_keypoints=opt.show_keypoints, small_text=small_text)
+        count += 1
+        if count % 5 == 0:
+            last_frame = frame
 
         if not opt.no_display:
             cv2.imshow('SuperGlue matches', out)
