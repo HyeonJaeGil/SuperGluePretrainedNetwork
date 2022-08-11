@@ -114,7 +114,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '--force_cpu', action='store_true',
         help='Force pytorch to run in CPU mode.')
-
+    parser.add_argument(
+        '--thermal', type=bool, default=False,
+        help='Run superglue on thermal image dataset.')
     opt = parser.parse_args()
     print(opt)
 
@@ -148,7 +150,7 @@ if __name__ == '__main__':
     keys = ['keypoints', 'scores', 'descriptors']
 
     vs = VideoStreamer(opt.input, opt.resize, opt.skip,
-                       opt.image_glob, opt.max_length)
+                       opt.image_glob, opt.thermal, opt.max_length)
     frame, ret = vs.next_frame()
     assert ret, 'Error when reading the first frame (try different --input?)'
 

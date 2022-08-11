@@ -103,7 +103,7 @@ class VideoStreamer:
         3.) A directory of images (files in directory matching 'image_glob').
         4.) A video file, such as an .mp4 or .avi file.
     """
-    def __init__(self, basedir, resize, skip, image_glob, max_length=1000000):
+    def __init__(self, basedir, resize, skip, image_glob, thermal, max_length=1000000):
         self._ip_grabbed = False
         self._ip_running = False
         self._ip_camera = False
@@ -117,6 +117,7 @@ class VideoStreamer:
         self.interp = cv2.INTER_AREA
         self.i = 0
         self.skip = skip
+        self.thermal = thermal
         self.max_length = max_length
         if isinstance(basedir, int) or basedir.isdigit():
             print('==> Processing USB webcam input: {}'.format(basedir))
@@ -170,12 +171,14 @@ class VideoStreamer:
         w_new, h_new = process_resize(w, h, self.resize)
         grayim = cv2.resize(
             grayim, (w_new, h_new), interpolation=self.interp)
-        # mean, std = np.mean(grayim), np.std(grayim)
-        # sigma = 1.0
-        # min, max = mean - sigma* std, mean + sigma* std
-        # grayim = (grayim - min) / (max - min)
-        # np.clip(grayim, 0, 1, out=grayim)
-        # grayim = cv2.normalize(grayim, None, 0, 255, cv2.NORM_MINMAX).astype('uint8')
+        
+        if self.thermal:
+            mean, std = np.mean(grayim), np.std(grayim)
+            sigma = 1.0
+            min, max = mean - sigma* std, mean + sigma* std
+            grayim = (grayim - min) / (max - min)
+            np.clip(grayim, 0, 1, out=grayim)
+            grayim = cv2.normalize(grayim, None, 0, 255, cv2.NORM_MINMAX).astype('uint8')
         return grayim
 
     def next_frame(self):
