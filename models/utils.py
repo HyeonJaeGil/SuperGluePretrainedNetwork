@@ -163,13 +163,19 @@ class VideoStreamer:
         Returns
             grayim: uint8 numpy array sized H x W.
         """
-        grayim = cv2.imread(impath, 0)
+        grayim = cv2.imread(impath, cv2.IMREAD_UNCHANGED)
         if grayim is None:
             raise Exception('Error reading image %s' % impath)
         w, h = grayim.shape[1], grayim.shape[0]
         w_new, h_new = process_resize(w, h, self.resize)
         grayim = cv2.resize(
             grayim, (w_new, h_new), interpolation=self.interp)
+        # mean, std = np.mean(grayim), np.std(grayim)
+        # sigma = 1.0
+        # min, max = mean - sigma* std, mean + sigma* std
+        # grayim = (grayim - min) / (max - min)
+        # np.clip(grayim, 0, 1, out=grayim)
+        # grayim = cv2.normalize(grayim, None, 0, 255, cv2.NORM_MINMAX).astype('uint8')
         return grayim
 
     def next_frame(self):
