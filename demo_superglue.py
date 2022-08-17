@@ -220,7 +220,7 @@ if __name__ == '__main__':
             last_frame, frame, kpts0, kpts1, mkpts0, mkpts1, color, text,
             path=None, show_keypoints=opt.show_keypoints, small_text=small_text)
         count += 1
-        if count % 5 == 0:
+        if count % 10 == 0:
             last_data = {k+'0': pred[k+'1'] for k in keys}
             last_data['image0'] = frame_tensor
             last_frame = frame
