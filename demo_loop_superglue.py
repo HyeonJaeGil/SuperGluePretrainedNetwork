@@ -191,7 +191,8 @@ if __name__ == '__main__':
     # img_folder = "thermal_left"
     # loop_pairs_path = join(root_path, '06/train_sets/positive_pairs.csv')
     imp = ImagePreprocessor()
-    lpl = LoopPairLoader(opt.loop_pairs , opt.root_path, opt.img_folder, imp)
+    lpl = LoopPairLoader(
+        opt.loop_pairs, opt.root_path, opt.img_folder, imp, looptype=1)
 
 # ---------------------------------------------------------------------/
     while True:

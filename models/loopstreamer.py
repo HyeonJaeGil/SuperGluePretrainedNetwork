@@ -57,13 +57,28 @@ class ImagePreprocessor:
 
 
 class LoopPairLoader:
-    def __init__(self, loop_pair, root_path, img_folder, image_preprocessor):
+    def __init__(self, loop_pair, root_path, img_folder, image_preprocessor, looptype=1):
+        self.load_pairs_from_csv(loop_pair)
         self.root_path = root_path
         self.img_folder = img_folder
         self.img_preprocessor = image_preprocessor
-        self.load_pairs_from_csv(loop_pair_csv=loop_pair)
+        
+        self.looptype = looptype
+        if self.looptype == 0:
+            self.loop_pairs = self.totalloop_pairs
+        elif self.looptype == 1:
+            self.loop_pairs = self.interloop_pairs
+        elif self.looptype == 2:
+            self.loop_pairs = self.intraloop_pairs
+
         self.count = 0
         self.nonexist_count = 0
+
+    def size(self):
+        return self.loop_pairs.shape[0]
+
+    def where(self):
+        return (self.count, self.count / self.loop_pairs.shape[0])
 
     def to2digit(self, input):
         number = str(input).split('.')[0]
@@ -100,25 +115,26 @@ class LoopPairLoader:
                         [self.to6digit(row[0]), self.to6digit(row[1]), 
                         self.to2digit(row[2]), self.to2digit(row[3]), row[4]])
 
-        self.loop_pairs = np.asarray(total, dtype='str')
+        self.totalloop_pairs = np.asarray(total, dtype='str')
         self.intraloop_pairs = np.asarray(intraloop, dtype='str')
         self.interloop_pairs = np.asarray(interloop, dtype='str')
 
+
     def next_pair(self):
-        if self.count == self.interloop_pairs.shape[0]-1:
-            return (None, None, False)
+        if self.count == self.loop_pairs.shape[0]-1:
+            return (None, None, None, None, False)
         # print("count:", self.count)
         
-        pair = self.interloop_pairs[self.count]
+        pair = self.loop_pairs[self.count]
         img1_path = join(self.root_path, pair[2], self.img_folder, pair[0]+'.png')
         img2_path = join(self.root_path, pair[3], self.img_folder, pair[1]+'.png')
         
         if not exists(img1_path) or not exists(img2_path):
             self.nonexist_count += 1
             if self.nonexist_count > 10:
-                return (None, None, False)
+                return (None, None, None, None, False)
             else:
-                return (None, None, True)
+                return (None, None, None, None, True)
         
         img1 = cv2.imread(img1_path, cv2.IMREAD_UNCHANGED).astype('float32')
         img2 = cv2.imread(img2_path, cv2.IMREAD_UNCHANGED).astype('float32')
